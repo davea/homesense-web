@@ -1,5 +1,7 @@
-<html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://unpkg.com/vue@~2.4/dist/vue.min.js"></script>
         <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
         <style>
@@ -38,12 +40,19 @@
                 -webkit-backdrop-filter: blur(24px);
             }
 
-            .sensor__name {
+            .sensor__text {
                 opacity: 0.35;
                 position: absolute;
                 color: black;
-                top: 50%;
                 left: 12px
+            }
+
+            .sensor__text--name {
+                top: 50%;
+            }
+
+            .sensor__text--status {
+                top: 75%;
             }
 
             .sensor__value {
@@ -64,24 +73,49 @@
                 left: 12px;
             }
         </style>
+        <script type="text/x-template" id="sensor-template">
+            <div class="sensor">
+                <span class="sensor__value" :title="value">{{ Math.round(value) }}&deg;</span>
+                <span class="sensor__text sensor__text--name">{{ display_name }}</span>
+                <span class="sensor__text sensor__text--status">{{ status }}</span>
+            </div>
+        </script>
     </head>
     <body>
         <div id="app">
             <div class="sensors">
                 <sensor
                     v-for="sensor in sensors"
+                    :key="sensor.key"
+                    :id="sensor.id"
                     :name="sensor.name"
                     :type="sensor.type"
                     :value="sensor.value"
-                    :key="sensor.topic"
+                    :active="sensor.active"
+                    :target="sensor.target"
                 ></sensor>
             </div>
         </div>
 
         <script>
             Vue.component('sensor', {
-                props: ['name', 'type', 'value'],
-                template: '<div class="sensor"><span class="sensor__name">{{ name }}</span><span class="sensor__value" :title="value">{{ Math.round(parseFloat(value)) }}&deg;</span></div>'
+                props: ['id', 'name', 'type', 'value', 'active', 'target'],
+                template: '#sensor-template',
+                computed: {
+                    display_name: function() {
+                        return this.name ? this.name : this.id;
+                    },
+                    status: function() {
+                        if (this.active === undefined || this.active === null) {
+                            return "";
+                        }
+                        if (this.active === "1") {
+                            return "Heat to " + this.target + "°";
+                        } else {
+                            return "Off";
+                        }
+                    }
+                }
             })
 
             var app = new Vue({

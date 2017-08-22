@@ -3,6 +3,7 @@
 import os
 import asyncio
 import logging
+from collections import defaultdict
 
 from sanic import Sanic
 from sanic.response import json
@@ -15,7 +16,7 @@ from hbmqtt.mqtt.constants import QOS_0
 
 MQTT_TOPICS = ["sensor/+/#"]
 
-SENSOR_STATES = {}
+SENSOR_STATES = defaultdict(dict)
 
 log = logging.getLogger("homesense")
 logging.basicConfig(level=logging.DEBUG)
@@ -33,7 +34,7 @@ async def sensors(request):
 
 async def mqtt_loop():
     topics = [(topic, QOS_0) for topic in MQTT_TOPICS]
-    ignore_retained = True
+    ignore_retained = False
     client = MQTTClient()
     await client.connect(os.environ['MQTT_BROKER'])
     log.info("Connected")
@@ -58,13 +59,29 @@ async def mqtt_loop():
 
 
 def handle_message(topic, payload):
-    _, sensor_type, name = topic.split("/")
-    SENSOR_STATES[topic] = {
-        'topic': topic,
+    parts = topic.split("/")[1:]
+
+    sensor_type = parts.pop(0)
+    sensor_id = parts.pop(0)
+    sensor_key = f"{sensor_type}/{sensor_id}"
+
+    SENSOR_STATES[sensor_key].update({
+        'key': sensor_key,
+        'id': sensor_id,
         'type': sensor_type,
-        'name': name,
-        'value': float(payload),
-    }
+    })
+    log.debug(SENSOR_STATES.values())
+
+    # If this message was to the value topic (e.g. 'sensor/temperature/office')
+    # then the message payload is the sensor value
+    if not parts:
+        SENSOR_STATES[sensor_key]['value'] = float(payload)
+    else:
+        # Sensors can have extra metadata in subtopics,
+        # based on a sort of key/value system
+        key = parts.pop(0)
+        SENSOR_STATES[sensor_key][key] = payload
+
 
 
 def main():
