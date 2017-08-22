@@ -10,6 +10,7 @@
                 background-image: url(/static/img/background.jpg);
                 background-size: cover;
 
+                cursor: default;
                 -webkit-user-select: none;
                         user-select: none;
             }
@@ -33,11 +34,6 @@
                 border-radius: 13px;
                 position: relative;
                 -webkit-backdrop-filter: blur(16px);
-            }
-
-            .sensor:hover {
-                background-color: rgba(255, 255, 255, 0.9);
-                -webkit-backdrop-filter: blur(24px);
             }
 
             .sensor__text {
@@ -72,9 +68,22 @@
                 top: 12px;
                 left: 12px;
             }
+
+            .sensor--active {
+                background-color: rgba(255, 255, 255, 0.9);
+            }
+
+            .sensor--active .sensor__value {
+                opacity: 1;
+                background-color: limegreen;
+            }
+
+            .sensor--active .sensor__text--name {
+                opacity: 1;
+            }
         </style>
         <script type="text/x-template" id="sensor-template">
-            <div class="sensor">
+            <div class="sensor" :class="classObject">
                 <span class="sensor__value" :title="value">{{ Math.round(value) }}&deg;</span>
                 <span class="sensor__text sensor__text--name">{{ display_name }}</span>
                 <span class="sensor__text sensor__text--status">{{ status }}</span>
@@ -114,7 +123,12 @@
                         } else {
                             return "Off";
                         }
-                    }
+                    },
+                    classObject: function() {
+                        return {
+                            'sensor--active': this.active === "1"
+                        }
+                    },
                 }
             })
 
