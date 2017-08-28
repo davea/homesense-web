@@ -85,11 +85,8 @@ def handle_message(topic, payload):
 
 
 def main():
-    loop = asyncio.get_event_loop()
-    server = app.create_server(host="0.0.0.0", port=8000, debug=True)
-    loop.create_task(server)
-    loop.create_task(mqtt_loop())
-    loop.run_forever()
+    app.add_task(mqtt_loop)
+    app.run(host="0.0.0.0", port=8000, debug=True)
 
 
 if __name__ == '__main__':
