@@ -88,7 +88,8 @@
         </style>
         <script type="text/x-template" id="sensor-template">
             <div class="sensor" :class="classObject">
-                <span class="sensor__value" :title="value">{{ Math.round(value) }}&deg;</span>
+                <span v-if="!isNaN(value)" class="sensor__value" :title="value">{{ Math.round(value) }}&deg;</span>
+                <span v-else class="sensor__value" :title="value">--</span>
                 <span class="sensor__text sensor__text--name">{{ display_name }}</span>
                 <span class="sensor__text sensor__text--status">{{ status }}</span>
             </div>
