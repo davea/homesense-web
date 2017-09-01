@@ -13,13 +13,16 @@ from hbmqtt.mqtt.constants import QOS_0
 
 # Relies on the following environment vars:
 # MQTT_BROKER - A URL pointing at the MQTT broker, e.g. 'mqtt://127.0.0.1/'
+# DEBUG - define if you want debug-level messages to be logged
 
 MQTT_TOPICS = ["sensor/+/#"]
 
 SENSOR_STATES = defaultdict(dict)
 
+DEBUG = bool(os.environ.get('DEBUG', False))
+
 log = logging.getLogger("homesense")
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG if DEBUG else logging.INFO)
 
 
 app = Sanic(__name__)
@@ -86,7 +89,7 @@ def handle_message(topic, payload):
 
 def main():
     app.add_task(mqtt_loop)
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=DEBUG)
 
 
 if __name__ == '__main__':
