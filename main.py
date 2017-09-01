@@ -50,7 +50,7 @@ async def mqtt_loop():
             topic = packet.variable_header.topic_name
             payload = bytes(packet.payload.data)
             handle_message(topic, payload)
-            log.debug(f"{topic}: {payload}")
+            log.debug("{topic}: {payload}".format(topic=topic, payload=payload))
         await client.unsubscribe(topics)
         await client.disconnect()
         log.info("Disconnected")
