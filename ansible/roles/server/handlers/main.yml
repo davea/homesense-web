@@ -1,0 +1,3 @@
+- name: reload supervisor
+  supervisorctl: name=homesense-web state=restarted
+  ignore_errors: yes

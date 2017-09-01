@@ -1,0 +1,7 @@
+[program:homesense-web]
+command=/home/pi/homesense-web-venv/bin/python /home/pi/homesense-web/main.py
+directory=/home/pi/homesense-web
+user=pi
+autostart=true
+autorestart=true
+environment=MQTT_BROKER="{{ mqtt_broker }}"
