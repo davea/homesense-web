@@ -148,7 +148,7 @@
         <div id="app">
             <div class="sensors">
                 <sensor
-                    v-for="sensor in sensors"
+                    v-for="sensor in sorted_sensors"
                     :key="sensor.key"
                     :id="sensor.id"
                     :name="sensor.name"
@@ -190,6 +190,17 @@
                 el: '#app',
                 data: {
                     sensors: []
+                },
+                computed: {
+                    sorted_sensors: function() {
+                        var sensors = this.sensors.slice();
+                        sensors.sort(function(a, b) {
+                            a = a.name || a.id || "a";
+                            b = b.name || b.id || "b";
+                            return a.localeCompare(b);
+                        });
+                        return sensors;
+                    }
                 }
             })
 
