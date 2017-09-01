@@ -63,7 +63,7 @@ def handle_message(topic, payload):
 
     sensor_type = parts.pop(0)
     sensor_id = parts.pop(0)
-    sensor_key = f"{sensor_type}/{sensor_id}"
+    sensor_key = "{sensor_type}/{sensor_id}".format(sensor_type=sensor_type, sensor_id=sensor_id)
 
     SENSOR_STATES[sensor_key].update({
         'key': sensor_key,
