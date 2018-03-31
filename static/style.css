@@ -1,0 +1,130 @@
+:root {
+    --sensors--cols: 3;
+
+    --sensor--size: 104px;
+    --sensor--margin: calc(var(--sensor--size) / 16);
+    --sensor--radius: 11px;
+    --sensor--blur: 13px;
+    --sensor--font-weight: 600;
+    --sensor--padding: 10px;
+
+    --sensor__text--font-size: 14px;
+
+    --sensor__value--font-size: 12px;
+    --sensor__value--size: 28px;
+}
+
+
+@media (min-width: 592px) {
+    :root {
+        --sensors--cols: 4;
+
+        --sensor--size: 128px;
+        --sensor--margin: calc(var(--sensor--size) / 16);
+        --sensor--radius: 13px;
+        --sensor--blur: 16px;
+        --sensor--font-weight: 600;
+        --sensor--padding: 12px;
+
+        --sensor__text--font-size: 16px;
+
+        --sensor__value--font-size: 14px;
+        --sensor__value--size: 32px;
+    }
+}
+@media (min-width: 736px) {
+    :root {
+        --sensors--cols: 5;
+    }
+}
+@media (min-width: 880px) {
+    :root {
+        --sensors--cols: 6;
+    }
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;
+    background-image: url(/static/img/background.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-color: black;
+    margin: 0;
+    padding: 0;
+
+    cursor: default;
+    -webkit-user-select: none;
+            user-select: none;
+}
+
+* {
+    /* box-shadow: 0 0 1px #f0f; */
+}
+
+.sensors {
+    width: calc((var(--sensor--size) + var(--sensor--margin) + var(--sensor--margin)) * var(--sensors--cols));
+    max-width: 100%;
+    margin: var(--sensor--margin) auto 0;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.sensor {
+    width: var(--sensor--size);
+    height: var(--sensor--size);
+    float: left;
+    margin: var(--sensor--margin);
+    background-color: rgba(224, 224, 224, 0.75);
+    border-radius: var(--sensor--radius);
+    position: relative;
+    -webkit-backdrop-filter: blur(var(--sensor--blur));
+            backdrop-filter: blur(var(--sensor--blur));
+    font-weight: var(--sensor--font-weight);
+}
+
+.sensor__text {
+    opacity: 0.35;
+    position: absolute;
+    color: black;
+    left: var(--sensor--padding);
+    font-size: var(--sensor__text--font-size);
+}
+
+.sensor__text--name {
+    top: 50%;
+}
+
+.sensor__text--status {
+    top: 75%;
+}
+
+.sensor__value {
+    opacity: 0.35;
+    background-color: black;
+    color: white;
+    font-size: var(--sensor__value--font-size);
+    line-height: var(--sensor__value--size);
+    text-align: center;
+    display: inline-block;
+    border-radius: calc(var(--sensor__value--size)/2);
+    height: var(--sensor__value--size);
+    width: var(--sensor__value--size);
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: var(--sensor--padding);
+    left: var(--sensor--padding);
+}
+
+.sensor--active {
+    background-color: white;
+}
+
+.sensor--active .sensor__value {
+    opacity: 1;
+    background-color: limegreen;
+}
+
+.sensor--active .sensor__text--name {
+    opacity: 1;
+}

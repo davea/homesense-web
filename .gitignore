@@ -4,3 +4,5 @@ __pycache__
 *.pyc
 .DS_Store
 /static/img/accessories/
+/node_modules
+/dist

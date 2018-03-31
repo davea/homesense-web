@@ -1,0 +1,29 @@
+{
+  "name": "homesense-web",
+  "version": "1.0.0",
+  "description": "Bashed-together web app for home automation. More than a little inspired by Home.app on iOS.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davea/homesense-web.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davea/homesense-web/issues"
+  },
+  "homepage": "https://github.com/davea/homesense-web#readme",
+  "dependencies": {
+    "mqtt": "^2.17.0",
+    "webpack": "^3.11.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^2.0.13"
+  }
+}
