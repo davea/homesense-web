@@ -1,16 +1,15 @@
 (function(){
 
 Vue.component('sensor', {
-    props: ['id', 'name', 'type', 'value', 'active', 'target'],
+    props: ['id', 'name', 'type', 'value', 'active', 'target', 'heating'],
     computed: {
-        display_name: function() {
-            return this.name ? this.name : this.id;
-        },
         status: function() {
             if (this.active === undefined || this.active === null) {
                 return "";
             }
-            if (this.active === "1") {
+            if (this.heating) {
+                return "Heating to " + this.target + "°";
+            } else if (this.active) {
                 return "Heat to " + this.target + "°";
             } else {
                 return "Off";
@@ -18,7 +17,8 @@ Vue.component('sensor', {
         },
         classObject: function() {
             return {
-                'sensor--active': this.active === "1"
+                'sensor--active': this.active,
+                'sensor--heating': this.heating
             };
         },
     },
@@ -26,7 +26,7 @@ Vue.component('sensor', {
         <div class="sensor" :class="classObject">
             <span v-if="!isNaN(value)" class="sensor__value" :title="value">{{ Math.round(value) }}&deg;</span>
             <span v-else class="sensor__value" :title="value">--</span>
-            <span class="sensor__text sensor__text--name">{{ display_name }}</span>
+            <span class="sensor__text sensor__text--name">{{ name }}</span>
             <span class="sensor__text sensor__text--status">{{ status }}</span>
         </div>
     `
@@ -53,7 +53,9 @@ var app = new Vue({
 });
 
 function handleControlMessage(topic, payload) {
-    
+    var id = topic.split("/")[2];
+    var heating = ("" + payload) === "1";
+    updateSensor(id, {heating: heating});
 }
 
 function handleSensorMessage(topic, payload) {
@@ -61,25 +63,48 @@ function handleSensorMessage(topic, payload) {
     var type = parts.shift();
     var id = parts.shift();
     var key = parts.shift() || "value";
-    var sensor = app.sensors[id] || {
+    var value = "" + payload; // Convert from Bytes
+    if (key === "value" || key === "target") {
+        value = parseFloat(value);
+    } else if (key === "active") {
+        value = ("" + payload) === "1";
+    }
+
+    var sensor = {
         id: id,
         type: type,
-        name: id.charAt(0).toUpperCase() + id.slice(1)
+        name: sensorName(id)
     };
-    var value = "" + payload;
-    if (key === "value") {
-        value = parseFloat(value);
-    }
     sensor[key] = value;
-    app.$set(app.sensors, id, sensor);
+
+    updateSensor(id, sensor);
 }
 
-var client = mqtt.connect("ws://localhost:9001");
-client.subscribe("sensor/temperature/#");
-client.subscribe("control/radiator/#");
+function updateSensor(id, values) {
+    var sensor = app.sensors[id] || {};
+    app.$set(app.sensors, id, Object.assign({}, sensor, values));
+}
+
+function handleCentralHeatingMessage(topic, payload) {
+    var active = ("" + payload) === "1";
+    homesense.config.fixed_rooms.forEach(id => {
+        updateSensor(id, {heating: active});
+    });
+}
+
+function sensorName(id) {
+    return homesense.config.name_overrides[id] || id.charAt(0).toUpperCase() + id.slice(1);
+}
+
+var client = mqtt.connect(homesense.config.mqtt_broker);
+homesense.config.topics.forEach(topic => {
+    client.subscribe(topic);
+});
 
 client.on("message", function (topic, payload) {
-    if (topic.split("/")[0] === "sensor") {
+    if (topic === "control/centralheating/active") {
+        handleCentralHeatingMessage(topic, payload);
+    } else if (topic.split("/")[0] === "sensor") {
         handleSensorMessage(topic, payload);
     } else if (topic.split("/")[0] === "control") {
         handleControlMessage(topic, payload);
