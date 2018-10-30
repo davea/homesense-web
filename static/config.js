@@ -1,4 +1,6 @@
 (function() {
+    var protocol = location.protocol === "https:" ? "wss://" : "ws://";
+    var mqtt_broker = protocol + location.host + "/";
     var config = {
         topics: [
             "sensor/temperature/#",
@@ -10,7 +12,8 @@
             'spareroom': "Spare Room"
         },
         fixed_rooms: ["office"],
-        mqtt_broker: "ws://localhost:9001",
+        // mqtt_broker: "ws://127.0.0.1:8080/",
+        mqtt_broker: mqtt_broker,
     };
 
     window.homesense = {config: config};
