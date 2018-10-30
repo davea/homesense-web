@@ -22,15 +22,31 @@ Vue.component('sensor', {
             };
         },
     },
+    methods: {
+        clicked: function () {
+            console.log(this);
+        }
+    },
     template: `
-        <div class="sensor" :class="classObject">
-            <span v-if="!isNaN(value)" class="sensor__value" :title="value">{{ Math.round(value) }}&deg;</span>
-            <span v-else class="sensor__value" :title="value">--</span>
+        <div class="sensor" :class="classObject" v-on:click="clicked">
+            <span v-if="!isNaN(value)" class="sensor__value">{{ Math.round(value) }}&deg;</span>
+            <span v-else class="sensor__value">--</span>
             <span class="sensor__text sensor__text--name">{{ name }}</span>
             <span class="sensor__text sensor__text--status">{{ status }}</span>
         </div>
     `
 });
+
+Vue.component('thermostat', {
+    props: ['sensor'],
+    template: `
+        <div class="thermostat">
+            <h1>{{ sensor.name }}</h1>
+            <span class="thermostat__value">{{ Math.round(sensor.value) }}&deg;</span>
+            <span class="thermostat__text thermostat__text--status">{{ sensor.status }}</span>
+        </div>
+    `
+})
 
 var app = new Vue({
     el: '#app',
