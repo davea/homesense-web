@@ -112,7 +112,7 @@ function sensorName(id) {
     return homesense.config.name_overrides[id] || id.charAt(0).toUpperCase() + id.slice(1);
 }
 
-var client = mqtt.connect(homesense.config.mqtt_broker);
+var client = mqtt.connect(homesense.config.mqtt_broker, homesense.config.auth);
 homesense.config.topics.forEach(topic => {
     client.subscribe(topic);
 });
