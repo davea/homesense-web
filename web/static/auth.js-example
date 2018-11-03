@@ -1,0 +1,6 @@
+(function() {
+    window.homesense.config.auth = {
+        username: 'mqttusername',
+        password: 'mqttpassword'
+    };
+})();
